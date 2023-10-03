@@ -4,4 +4,6 @@
 
 *.bin
 *.img
-
+!build_boot
+!write_disk
+test.*

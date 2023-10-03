@@ -1,0 +1,5 @@
+#!/bin/bash
+BIN_SOURCE=./boot.bin
+[ ! -f "$BIN_SOURCE" ] && { echo "$BIN_SOURCE does not exist."; exit 1; }
+dd if=/dev/zero of=./boot.img bs=1024 count=1440
+dd if=./boot.bin of=./boot.img conv=notrunc

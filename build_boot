@@ -1,0 +1,5 @@
+#!/bin/bash
+ASM_SOURCE=./boot.asm
+[ ! -f "$ASM_SOURCE" ] && { echo "$ASM_SOURCE does not exist."; exit 1; }
+nasm -f bin boot.asm -o boot.bin
+od -t x1 -A n boot.asm
