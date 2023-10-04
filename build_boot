@@ -1,5 +1,8 @@
 #!/bin/bash
-ASM_SOURCE=./boot.asm
+SOURCE_DIR=./src
+BUILD_DIR=./build
+ASM_SOURCE="$SOURCE_DIR"/boot.asm
+BIN="$BUILD_DIR"/boot.bin
 [ ! -f "$ASM_SOURCE" ] && { echo "$ASM_SOURCE does not exist."; exit 1; }
-nasm -f bin boot.asm -o boot.bin
-od -t x1 -A n boot.bin
+nasm -f bin "$ASM_SOURCE" -o "$BIN"
+od -t x1 -A n "$BIN"
