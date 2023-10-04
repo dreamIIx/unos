@@ -1,7 +1,0 @@
-#!/bin/bash
-BUILD_DIR=./build
-BIN="$BUILD_DIR"/boot.bin
-IMG="$BUILD_DIR"/boot.img
-[ ! -f "$BIN" ] && { echo "$BIN does not exist."; exit 1; }
-dd if=/dev/zero of="$IMG" bs=1024 count=1440
-dd if="$BIN" of="$IMG" conv=notrunc

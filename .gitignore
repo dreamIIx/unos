@@ -2,8 +2,8 @@
 !*.*
 !*/
 
-*.bin
-*.img
-!build_boot
-!write_disk
+!Makefile
+
+build/*
+
 test.*
