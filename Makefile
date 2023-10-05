@@ -47,9 +47,9 @@ bootloader: $(BOOTLOADER_BIN)
 $(FLOPPY_IMG): $(BOOTLOADER_BIN) $(KERNEL_BIN)
 	$(info [MAKE] building: $@)
 	$(DD) bs=1024 count=1440 if=/dev/zero of=$@
-	$(MKFS) -t fat -F 12 -n "UNOS" $@
+#	$(MKFS) -t fat -F 12 -n "UNOS" $@
 	$(DD) conv=notrunc if=$< of=$@
-	$(MCOPY) -i $@ $(word 2,$^) "::kernel.bin"
+#	$(MCOPY) -i $@ $(word 2,$^) "::kernel.bin"
 
 $(KERNEL_BIN): $(KERNEL_ASM)
 	$(info [MAKE] building: $@)

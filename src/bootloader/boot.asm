@@ -12,8 +12,7 @@ main:
 	call print
 	hlt
 
-halt:
-	jmp halt
+	jmp $
 
 print:
 	push si
