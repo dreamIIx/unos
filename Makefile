@@ -54,7 +54,6 @@ $(FLOPPY_IMG): $(BOOTLOADER_BIN) $(KERNEL_BIN)
 $(KERNEL_BIN): $(KERNEL_ASM)
 	$(info [MAKE] building: $@)
 	$(ASM) -fbin $< -o $@
-	$(OD) $(OD_OPT) $@
 
 $(BOOTLOADER_BIN): $(BOOTLOADER_ASM)
 	$(info [MAKE] building: $@)
