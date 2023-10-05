@@ -16,12 +16,12 @@ KERNEL_BIN = $(KERNEL_BUILD_DIR)/kernel.bin
 FLOPPY_IMG = $(BUILD_DIR)/floppy.img
 
 ifeq ($(OS), Windows_NT)
-	ASM = 
-	DD = 
+	ASM = ${NASM_PATH}\nasm
+	DD = ${CYGWIN_PATH}\bin\dd
 	MCOPY = 
 	MKFS = 
 	LD = 
-	OD = 
+	OD = ${CYGWIN_PATH}\bin\od
 	OD_OPT = -t x1 -A n
 else
     UNAME_S := $(shell uname -s)
