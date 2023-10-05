@@ -5,10 +5,17 @@
     "version": "0.2.0",
     "configurations": [
         {
-            "name": "bochs floppy",
+            "name": "(linux) bochs floppy",
             "type": "f5anything",
             "request": "launch",
             "command": "bochs -q -f ./bochs.linux.conf",
+            "preLaunchTask": "make_floppy"
+        },
+        {
+            "name": "(win) bochs floppy",
+            "type": "f5anything",
+            "request": "launch",
+            "command": "& \"${env:BOCHS_PATH}\\bochs\" -q -f ./bochs.win.conf",
             "preLaunchTask": "make_floppy"
         }
     ]
