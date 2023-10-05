@@ -6,38 +6,42 @@ main:
 	mov ds, ax
 	mov es, ax
 	mov ss, ax
+	mov [boot_drive], dl
 
 	mov sp, 0x7c00
 	mov si, os_boot_msg
 	call print
-	hlt
+
+	mov bx, 0x9000
+	mov dh, 2
+	mov dl, [boot_drive]
+	call disk_load
+
+	mov dx, [0x9000 + 512]
+	call print_hex					; TODO: implement print_hex, source=DX
+
+	mov dx, [0x9000 + 512 + 512]
+	call print_hex					; TODO: implement print_hex, source=DX
 
 	jmp $
 
-print:
-	push si
-	push ax
-	push bx
+%ifndef PRINT
+	%include "./src/misc/print.asm"
+%endif
 
-print_loop:
-	lodsb
-	or al, al
-	jz done_print
-	mov ah, 0x0e
-	mov bh, 0
-	int 0x10
-	jmp print_loop
-
-done_print:
-	pop bx
-	pop ax
-	pop si
-	ret
+%ifndef READ_FLOPPY_DISK
+	%include "./src/bootloader/read_floppy_disk.asm"
+%endif
 
 os_boot_msg:
 	DB 'Hello world!', 0x0d, 0x0a, 0
+boot_drive:
+	DB 0
 
-times 510-($-$$) db 0
-
+times 510-($-$$) DB 0
 dw 0xaa55
 
+times 512 DB 0
+dw 0xeffe
+times 512 DB 0
+dw 0xfeef
