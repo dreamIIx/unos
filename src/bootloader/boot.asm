@@ -1,5 +1,5 @@
-ORG 0x7c00
-BITS 16
+[ORG 0x7c00]
+[BITS 16]
 
 main:
 	mov ax, 0
@@ -13,15 +13,17 @@ main:
 	call print
 
 	mov bx, 0x9000
-	mov dh, 2
+	mov dh, 10
 	mov dl, [boot_drive]
 	call disk_load
 
 	mov dx, [0x9000 + 512]
-	call print_hex					; TODO: implement print_hex, source=DX
+	mov si, dx
+	call print					; TODO: implement print_hex, source=DX
 
-	mov dx, [0x9000 + 512 + 512]
-	call print_hex					; TODO: implement print_hex, source=DX
+	mov dx, [0x9000 + 1024]
+	mov si, dx
+	call print					; TODO: implement print_hex, source=DX
 
 	jmp $
 
@@ -42,6 +44,6 @@ times 510-($-$$) DB 0
 dw 0xaa55
 
 times 512 DB 0
-dw 0xeffe
-times 512 DB 0
-dw 0xfeef
+dw 'GL'
+times 510 DB 0
+dw 'HF'

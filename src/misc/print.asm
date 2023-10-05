@@ -2,8 +2,7 @@
     %define PRINT
 %endif
 
-ORG 0x7c00
-BITS 16
+[BITS 16]
 
 print:
 	push si
