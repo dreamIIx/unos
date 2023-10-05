@@ -36,7 +36,7 @@ done_print:
 	ret
 
 os_boot_msg:
-	DB 'Hello world', 0x0d, 0x0a, 0
+	DB 'Hello world!', 0x0d, 0x0a, 0
 
 times 510-($-$$) db 0
 

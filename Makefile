@@ -1,14 +1,24 @@
 SOURCE_DIR = ./src
 BUILD_DIR = ./build
-BOOT_ASM = $(SOURCE_DIR)/boot.asm
-BOOT_BIN = $(BUILD_DIR)/boot.bin
-BOOT_IMG = $(BUILD_DIR)/boot.img
+
+BOOTLOADER_SOURCE_DIR = $(SOURCE_DIR)/bootloader
+KERNEL_SOURCE_DIR = $(SOURCE_DIR)/kernel
+
+BOOTLOADER_BUILD_DIR = $(BUILD_DIR)/bootloader
+KERNEL_BUILD_DIR = $(BUILD_DIR)/kernel
+
+BOOTLOADER_ASM = $(BOOTLOADER_SOURCE_DIR)/boot.asm
+KERNEL_ASM = $(KERNEL_SOURCE_DIR)/main.asm
+
+BOOTLOADER_BIN = $(BOOTLOADER_BUILD_DIR)/bootloader.bin
+KERNEL_BIN = $(KERNEL_BUILD_DIR)/kernel.bin
+
+FLOPPY_IMG = $(BUILD_DIR)/floppy.img
 
 ifeq ($(OS), Windows_NT)
 	ASM = 
 	DD = 
 	LD = 
-	BOOT = $(BOOT_IMG)
 else
     UNAME_S := $(shell uname -s)
     ifeq ($(UNAME_S), Linux)
@@ -17,27 +27,31 @@ else
 		LD = ld
 		OD = od
 		ASM_OPT = -fbin
-		OD_OPT = -t x1 -A n 
-		BOOT = $(BOOT_IMG)
+		OD_OPT = -t x1 -A n
     endif
 endif
 
 $(info init..)
 
 .PHONY: clean_boot build_boot
-build_boot: $(BOOT)
 
-$(BOOT_BIN): $(BOOT_ASM)
-	$(info )
-	$(info processing (stage 1))
-	$(ASM) $(ASM_OPT) $< -o $@
-	$(OD) $(OD_OPT) $@
+floppy: $(FLOPPY_IMG)
+kernel: $(KERNEL_BIN)
+bootloader: $(BOOTLOADER_BIN)
 
-$(BOOT): $(BOOT_BIN)
+$(FLOPPY_IMG): $(BOOTLOADER_BIN)
 	$(info )
-	$(info processing  (stage 2))
+	$(info building: $@)
 	$(DD) bs=1024 count=1440 if=/dev/zero of=$@
 	$(DD) conv=notrunc if=$< of=$@
 
+$(BOOTLOADER_BIN): $(BOOTLOADER_ASM)
+	$(info )
+	$(info building: $@)
+	$(ASM) $(ASM_OPT) $< -o $@
+	$(OD) $(OD_OPT) $@
+
 clean_boot:
-	rm $(BOOT_BIN)
+	rm $(FLOPPY_IMG)
+	rm $(KERNEL_BIN)
+	rm $(BOOTLOADER_BIN)
