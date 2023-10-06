@@ -13,22 +13,24 @@ main:
 	call print
 
 	mov bx, 0x9000
-	mov dh, 10
+	mov dh, 4
 	mov dl, [boot_drive]
 	call disk_load
 
-	mov dx, [0x9000 + 512]
-	mov si, dx
+	mov si, 0x9000 + 512
 	call print					; TODO: implement print_hex, source=DX
 
-	mov dx, [0x9000 + 1024]
-	mov si, dx
+	mov si, 0x9000 + 1024
 	call print					; TODO: implement print_hex, source=DX
 
 	jmp $
 
 %ifndef PRINT
 	%include "./src/misc/print.asm"
+%endif
+
+%ifndef PRINT_HEX
+	%include "./src/misc/print_hex.asm"
 %endif
 
 %ifndef READ_FLOPPY_DISK

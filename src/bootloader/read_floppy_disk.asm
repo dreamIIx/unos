@@ -23,7 +23,7 @@ disk_load:
     ret
 
 disk_error:
-    mov bx, disk_error_msg
+    mov si, disk_error_msg
     call print
     jmp $
 
