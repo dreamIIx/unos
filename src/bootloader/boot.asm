@@ -17,6 +17,14 @@ main:
 	mov dl, [boot_drive]
 	call disk_load
 
+	mov si, bx
+	xor cx, cx
+	mov al, dh
+	mov cx, 0x200
+	mul cx
+	mov cx, ax
+	add cx, 0x9000
+	xor ah, ah
 	call accumulate
 
 	mov si, 0x9000 + 1024 + 512
@@ -26,31 +34,6 @@ main:
 	call print					; TODO: implement print_hex, source=?
 
 	jmp $
-
-accumulate:
-	pusha
-	xor bx, bx
-	mov si, 0x9000
-
-	xor cx, cx
-	mov al, dh
-	mov cx, 0x200
-	mul cx
-	mov cx, ax
-	add cx, 0x9000
-	xor ah, ah
-accumulate_loop:
-	lodsb
-	add bx, ax
-	cmp si, cx
-	jl accumulate_loop
-
-	mov [sum], bx
-	mov si, sum
-	xchg bx, bx
-	call print					; TODO: implement print_hex, source=?
-	popa
-	ret
 
 %ifndef PRINT
 	%include "./src/misc/print.asm"
@@ -62,6 +45,10 @@ accumulate_loop:
 
 %ifndef READ_FLOPPY_DISK
 	%include "./src/bootloader/read_floppy_disk.asm"
+%endif
+
+%ifndef ACCUMULATE_SUM
+	%include "./src/misc/accumulate_sum.asm"
 %endif
 
 os_boot_msg:
