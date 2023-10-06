@@ -15,7 +15,8 @@ accumulate_loop:
 	jl accumulate_loop
 
 	mov [sum], bx
-	mov si, sum
-	call print					; TODO: implement print_hex, source=?
 	popa
 	ret
+
+sum:
+	DB 0

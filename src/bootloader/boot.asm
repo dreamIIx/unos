@@ -27,10 +27,7 @@ main:
 	xor ah, ah
 	call accumulate
 
-	mov si, 0x9000 + 1024 + 512
-	call print					; TODO: implement print_hex, source=?
-
-	mov si, 0x9000  + 1024 + 1024
+	mov si, sum
 	call print					; TODO: implement print_hex, source=?
 
 	jmp $
@@ -51,12 +48,10 @@ main:
 	%include "./src/misc/accumulate_sum.asm"
 %endif
 
-os_boot_msg:
-	DB 'Hello world!', 0x0d, 0x0a, 0
 boot_drive:
 	DB 0
-sum:
-	DB 0
+os_boot_msg:
+	DB 'Hello world!', 0x0d, 0x0a, 0
 
 times 510-($-$$) DB 0
 dw 0xaa55
