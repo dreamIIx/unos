@@ -14,7 +14,6 @@ accumulate_loop:
 	cmp si, cx
 	jl accumulate_loop
 
-	xchg bx, bx
 	mov [sum], bx
 	popa
 	ret
