@@ -5,10 +5,13 @@ main:
 	xor ax, ax
 	mov ds, ax
 	mov es, ax
+
+cli
 	mov ss, ax
+	mov sp, 0x7c00
+rli
 	mov [boot_drive], dl
 
-	mov sp, 0x7c00
 	mov si, os_boot_msg
 	call print
 

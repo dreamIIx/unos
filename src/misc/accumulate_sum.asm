@@ -14,9 +14,12 @@ accumulate_loop:
 	cmp si, cx
 	jl accumulate_loop
 
+	xchg bx, bx
 	mov [sum], bx
 	popa
 	ret
 
 sum:
+	DW 0
+null_byte:
 	DB 0
