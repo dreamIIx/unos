@@ -6,10 +6,10 @@ main:
 	mov ds, ax
 	mov es, ax
 
-cli
+	cli
 	mov ss, ax
 	mov sp, 0x7c00
-sti
+	sti
 	mov [boot_drive], dl
 
 	mov si, os_boot_msg
@@ -32,18 +32,21 @@ sti
 
 	xchg bx, bx
 
-	mov si, bx
+	mov si, 0x9000
+	;mov dx, bx
 	xor cx, cx
 	mov al, dh
 	mov cx, 0x200
 	mul cx
 	mov cx, ax
-	add cx, 0x9000
+	add cx, 0
 	xor ah, ah
 	call accumulate
  
 	mov si, sum
 	call print					; TODO: implement print_hex, source=?
+
+	call switch_to_pm
 
 	jmp $
 
@@ -67,6 +70,10 @@ boot_drive:
 	DB 0
 os_boot_msg:
 	DB 'Hello world!', 0x0d, 0x0a, 0
+
+%ifndef SWITCH_TO_PM
+	%include "./src/pm/switch2pm.asm"
+%endif
 
 times 510-($-$$) DB 0
 dw 0xaa55

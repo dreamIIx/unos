@@ -10,10 +10,12 @@ accumulate:
 
 accumulate_loop:
 	lodsb
+	;add dx, 2
 	add bx, ax
 	cmp si, cx
 	jl accumulate_loop
 
+	xchg bx, bx
 	mov [sum], bx
 	popa
 	ret

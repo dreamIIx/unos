@@ -1,4 +1,9 @@
+%ifndef PRINT_D2VM
+    %define PRINT_D2VM
+%endif
+
 ; Printing directly to video memory
+
 [BITS 32]
 
 VIDEO_MEMORY equ 0xb8000
@@ -23,5 +28,5 @@ print_d2vm_loop:
     jmp print_d2vm_loop
 
 print_d2vm_done:
-    pops
+    popa
     ret

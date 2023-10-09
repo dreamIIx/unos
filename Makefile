@@ -38,7 +38,7 @@ endif
 
 $(info init..)
 
-.PHONY: clean_boot build_boot
+.PHONY: clean_boot build_boot floppy kernel bootloader
 
 floppy: bootloader kernel $(FLOPPY_IMG)
 kernel: $(KERNEL_BIN)
@@ -55,7 +55,7 @@ $(KERNEL_BIN): $(KERNEL_ASM)
 	$(info [MAKE] building: $@)
 	$(ASM) -fbin $< -o $@
 
-$(BOOTLOADER_BIN): $(BOOTLOADER_ASM)
+$(BOOTLOADER_BIN): $(BOOTLOADER_ASM) ./src/rm/io/print.asm ./src/rm/io/print_hex.asm ./src/bootloader/read_floppy_disk.asm ./src/rm/misc/accumulate_sum.asm ./src/pm/switch2pm.asm
 	$(info [MAKE] building: $@)
 	$(ASM) -fbin $< -o $@
 	$(OD) $(OD_OPT) $@
