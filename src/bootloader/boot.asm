@@ -9,7 +9,7 @@ main:
 cli
 	mov ss, ax
 	mov sp, 0x7c00
-rli
+sti
 	mov [boot_drive], dl
 
 	mov si, os_boot_msg
@@ -36,11 +36,11 @@ rli
 	jmp $
 
 %ifndef PRINT
-	%include "./src/misc/print.asm"
+	%include "./src/rm/io/print.asm"
 %endif
 
 %ifndef PRINT_HEX
-	%include "./src/misc/print_hex.asm"
+	%include "./src/rm/io/print_hex.asm"
 %endif
 
 %ifndef READ_FLOPPY_DISK
@@ -48,7 +48,7 @@ rli
 %endif
 
 %ifndef ACCUMULATE_SUM
-	%include "./src/misc/accumulate_sum.asm"
+	%include "./src/rm/misc/accumulate_sum.asm"
 %endif
 
 boot_drive:
