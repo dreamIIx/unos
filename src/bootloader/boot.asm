@@ -14,11 +14,23 @@ sti
 
 	mov si, os_boot_msg
 	call print
+	
+	push ax
+	push bx
 
-	mov bx, 0x9000
+	
+	mov ax, 0x2000
+	mov es, ax
+	mov bx, 0   
 	mov dh, 5
 	mov dl, [boot_drive]
 	call disk_load
+	
+	xchg bx, bx
+	pop bx
+	pop ax
+
+	xchg bx, bx
 
 	mov si, bx
 	xor cx, cx
@@ -29,18 +41,18 @@ sti
 	add cx, 0x9000
 	xor ah, ah
 	call accumulate
-
+ 
 	mov si, sum
 	call print					; TODO: implement print_hex, source=?
 
 	jmp $
 
 %ifndef PRINT
-	%include "./src/rm/io/print.asm"
+	%include "./src/misc/print.asm"
 %endif
 
 %ifndef PRINT_HEX
-	%include "./src/rm/io/print_hex.asm"
+	%include "./src/misc/print_hex.asm"
 %endif
 
 %ifndef READ_FLOPPY_DISK
@@ -48,7 +60,7 @@ sti
 %endif
 
 %ifndef ACCUMULATE_SUM
-	%include "./src/rm/misc/accumulate_sum.asm"
+	%include "./src/misc/accumulate_sum.asm"
 %endif
 
 boot_drive:
@@ -59,7 +71,8 @@ os_boot_msg:
 times 510-($-$$) DB 0
 dw 0xaa55
 
-times 512 DB 0
+times 510 DB 0
+dw 0x3001
 dw 0x3001
 times 510 DB 0
 dw 0x0203
@@ -68,3 +81,6 @@ dw 'GL'
 times 510 DB 0
 dw 'HF'
 times 510 DB 0
+
+times 456190 DB 1
+dw 'ye'
