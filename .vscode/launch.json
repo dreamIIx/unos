@@ -15,7 +15,14 @@
             "name": "(win) bochs floppy",
             "type": "f5anything",
             "request": "launch",
-            "command": "& \"${env:BOCHS_PATH}\\bochs\" -q -f ./bochs.win.conf",
+            "command": "& \"${env:BOCHS_PATH}\\bochs\"-q -f ./bochs.win.conf",
+            "preLaunchTask": "make_floppy"
+        },
+        {
+            "name": "(win_dbg) bochs floppy",
+            "type": "f5anything",
+            "request": "launch",
+            "command": "& \"${env:BOCHS_PATH}\\bochsdbg\" -q -f ./bochsdbg.win.conf",
             "preLaunchTask": "make_floppy"
         }
     ]
