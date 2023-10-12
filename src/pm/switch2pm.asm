@@ -25,6 +25,7 @@ switch_to_pm:
     jmp CODE_SEG:init_pm
 
 [BITS 32]
+KERNEL_OFFSET equ 0x20200
 
 init_pm:
     mov ax, DATA_SEG
@@ -42,6 +43,9 @@ init_pm:
 begin_pm:
 	mov ebx, msg_pm_begin
 	call print_d2vm
+
+	call KERNEL_OFFSET_ES:KERNEL_OFFSET_BX
+
 	jmp $
 
 msg_pm_begin db "Hello from 32-bit protected mode!", 0

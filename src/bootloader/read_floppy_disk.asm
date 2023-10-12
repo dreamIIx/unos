@@ -19,7 +19,6 @@ loop_load:
 
     mov ah, 0x02    ; 0x2 - read sectors from drive
 
-
     push ax
     mov ax, es
     add ax, 0x20
@@ -48,7 +47,6 @@ continue:
     add [sector_counter], word 0x1
     cmp [sector_counter], word 896
     jne loop_load
-    xchg bx, bx
     ret
 
 iter_counter:

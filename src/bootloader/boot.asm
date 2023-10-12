@@ -1,6 +1,9 @@
 [ORG 0x7c00]
 [BITS 16]
 
+KERNEL_OFFSET_ES equ 0x2020
+KERNEL_OFFSET_BX equ 0
+
 main:
 	xor ax, ax
 	mov ds, ax
@@ -18,21 +21,17 @@ main:
 	push ax
 	push bx
 
-	mov ax, 0x2000
+	mov ax, KERNEL_OFFSET_ES
 	mov es, ax
-	mov bx, 0   
-	mov dh, 5
+	mov bx, KERNEL_OFFSET_BX  
+	mov dh, 15
 	mov dl, [boot_drive]
 	call disk_load
 	
-	xchg bx, bx
 	pop bx
 	pop ax
 
-	xchg bx, bx
-
-	mov si, 0x9000
-	;mov dx, bx
+	mov si, KERNEL_OFFSET_ES
 	xor cx, cx
 	mov al, dh
 	mov cx, 0x200
@@ -46,8 +45,6 @@ main:
 	call print					; TODO: implement print_hex, source=?
 
 	call switch_to_pm
-
-	jmp $
 
 %ifndef PRINT
 	%include "./src/rm/io/print.asm"
@@ -77,16 +74,16 @@ os_boot_msg:
 times 510-($-$$) DB 0
 dw 0xaa55
 
-times 510 DB 0
-dw 0x3001
-dw 0x3001
-times 510 DB 0
-dw 0x0203
-times 510 DB 0
-dw 'GL'
-times 510 DB 0
-dw 'HF'
-times 510 DB 0
+;times 510 DB 0
+;dw 0x3001
+;dw 0x3001
+;times 510 DB 0
+;dw 0x0203
+;times 510 DB 0
+;dw 'GL'
+;times 510 DB 0
+;dw 'HF'
+;times 510 DB 0
 
-times 456190 DB 1
-dw 'ye'
+;times 456190 DB 1
+;dw 'ye'
