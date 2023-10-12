@@ -18,7 +18,6 @@ main:
 	push ax
 	push bx
 
-	
 	mov ax, 0x2000
 	mov es, ax
 	mov bx, 0   
