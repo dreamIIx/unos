@@ -8,12 +8,14 @@ BOOTLOADER_BUILD_DIR = $(BUILD_DIR)/bootloader
 KERNEL_BUILD_DIR = $(BUILD_DIR)/kernel
 
 BOOTLOADER_ASM = $(BOOTLOADER_SOURCE_DIR)/boot.asm
-KERNEL_C = $(KERNEL_SOURCE_DIR)/main.c
+KERNEL_C = $(KERNEL_SOURCE_DIR)/kernel.c
+KERNEL_ENTRY_ASM = $(KERNEL_SOURCE_DIR)/kernel_entry.asm
 
 BOOTLOADER_BIN = $(BOOTLOADER_BUILD_DIR)/bootloader.bin
-KERNEL_O = $(KERNEL_BUILD_DIR)/main.o
+KERNEL_O = $(KERNEL_BUILD_DIR)/kernel.o
+KERNEL_ENTRY_O = $(KERNEL_BUILD_DIR)/kernel_entry.o
 KERNEL_TMP = $(KERNEL_BUILD_DIR)/kernel.tmp
-KERNEL_BIN = $(KERNEL_BUILD_DIR)/main.bin
+KERNEL_BIN = $(KERNEL_BUILD_DIR)/kernel.bin
 
 FLOPPY_IMG = $(BUILD_DIR)/floppy.img
 
@@ -26,7 +28,6 @@ ifeq ($(OS), Windows_NT)
 	MCOPY = 
 	MKFS = 
 	LD = 
-	LD_M_OPT = 
 	OBJCOPY = 
 	OD = ${CYGWIN_PATH}\bin\od
 	OD_OPT = -t x1 -A n
@@ -40,9 +41,7 @@ else
 		MCOPY = mcopy
 		MKFS = mkfs
 		LD = ld
-		LD_M_OPT = elf_i386
 		OBJCOPY = objcopy
-		OBJCOPY_I_OPT = elf_i386
 		OD = od
 		OD_OPT = -t x1 -A n
 		RM = rm
@@ -65,15 +64,18 @@ $(FLOPPY_IMG): $(BOOTLOADER_BIN) $(KERNEL_BIN)
 #	$(MCOPY) -i $@ $(word 2,$^) "::kernel.bin"
 	$(DD) conv=notrunc seek=1 if=$(word 2,$^) of=$@
 
+$(KERNEL_ENTRY_O): $(KERNEL_ENTRY_ASM)
+	$(ASM) -f elf $< -o $@
+
 $(KERNEL_O): $(KERNEL_C)
 	$(info [MAKE] building: $@)
-	$(GCC) -fno-pie -ffreestanding -c $< -o $@
+	$(GCC) -m32 -fno-pie -ffreestanding -c $< -o $@
 #	-m32
 
-$(KERNEL_BIN): $(KERNEL_O)
+$(KERNEL_BIN): $(KERNEL_O) $(KERNEL_ENTRY_O)
 	$(info [MAKE] building: $@)
-	$(LD) -Ttext $(KERNEL_ENTRY_ADDRESS) $< -o $@
-#	-m $(LD_M_OPT) $(KERNEL_TMP)
+	$(LD) -m elf_i386 -Ttext $(KERNEL_ENTRY_ADDRESS) $^ -o $@
+#	$(KERNEL_TMP)
 #	$(OBJCOPY) -I $(OBJCOPY_I_OPT) -O $(KERNEL_TMP) $< $@
 
 $(BOOTLOADER_BIN): $(BOOTLOADER_ASM) ./src/rm/io/print.asm ./src/rm/io/print_hex.asm ./src/bootloader/read_floppy_disk.asm ./src/rm/misc/accumulate_sum.asm ./src/pm/switch2pm.asm
@@ -83,6 +85,7 @@ $(BOOTLOADER_BIN): $(BOOTLOADER_ASM) ./src/rm/io/print.asm ./src/rm/io/print_hex
 
 clean_boot:
 	$(RM) -f $(FLOPPY_IMG)
+	$(RM) -f $(KERNEL_ENTRY_O)
 	$(RM) -f $(KERNEL_O)
 	$(RM) -f $(KERNEL_TMP)
 	$(RM) -f $(KERNEL_BIN)
