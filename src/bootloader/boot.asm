@@ -17,9 +17,6 @@ main:
 
 	mov si, os_boot_msg
 	call print
-	
-	push ax
-	push bx
 
 	mov ax, KERNEL_OFFSET_ES
 	mov es, ax
@@ -27,22 +24,19 @@ main:
 	mov dh, 15
 	mov dl, [boot_drive]
 	call disk_load
-	
-	pop bx
-	pop ax
 
-	mov si, KERNEL_OFFSET_ES
-	xor cx, cx
-	mov al, dh
-	mov cx, 0x200
-	mul cx
-	mov cx, ax
-	add cx, 0
-	xor ah, ah
-	call accumulate
+	;mov si, KERNEL_OFFSET_ES
+	;xor cx, cx
+	;mov al, dh
+	;mov cx, 0x200
+	;mul cx
+	;mov cx, ax
+	;add cx, 0
+	;xor ah, ah
+	;call accumulate
  
-	mov si, sum
-	call print					; TODO: implement print_hex, source=?
+	;mov si, sum
+	;call print					; TODO: implement print_hex, source=?
 
 	call switch_to_pm
 
@@ -52,17 +46,17 @@ main:
 	%include "./src/rm/io/print.asm"
 %endif
 
-%ifndef PRINT_HEX
-	%include "./src/rm/io/print_hex.asm"
-%endif
+;%ifndef PRINT_HEX
+;	%include "./src/rm/io/print_hex.asm"
+;%endif
 
 %ifndef READ_FLOPPY_DISK
 	%include "./src/bootloader/read_floppy_disk.asm"
 %endif
 
-%ifndef ACCUMULATE_SUM
-	%include "./src/rm/misc/accumulate_sum.asm"
-%endif
+;%ifndef ACCUMULATE_SUM
+;	%include "./src/rm/misc/accumulate_sum.asm"
+;%endif
 
 boot_drive:
 	DB 0
