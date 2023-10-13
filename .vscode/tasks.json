@@ -4,7 +4,7 @@
         {
             "label": "make_floppy",
             "type": "shell",
-            "command": "./unix"
+            "command": "./build_"
         }
 	]
 }

@@ -46,6 +46,8 @@ main:
 
 	call switch_to_pm
 
+	jmp $
+
 %ifndef PRINT
 	%include "./src/rm/io/print.asm"
 %endif

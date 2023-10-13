@@ -11,7 +11,7 @@ BOOTLOADER_ASM = $(BOOTLOADER_SOURCE_DIR)/boot.asm
 KERNEL_C = $(KERNEL_SOURCE_DIR)/main.c
 
 BOOTLOADER_BIN = $(BOOTLOADER_BUILD_DIR)/bootloader.bin
-KERNEL_O = $(KERNEL_SOURCE_DIR)/main.o
+KERNEL_O = $(KERNEL_BUILD_DIR)/main.o
 KERNEL_TMP = $(KERNEL_BUILD_DIR)/kernel.tmp
 KERNEL_BIN = $(KERNEL_BUILD_DIR)/main.bin
 
@@ -72,7 +72,7 @@ $(KERNEL_O): $(KERNEL_C)
 
 $(KERNEL_BIN): $(KERNEL_O)
 	$(info [MAKE] building: $@)
-	$(LD) -Ttext $(KERNEL_ENTRY_ADDRESS) --oformat binary $< -o $@
+	$(LD) -Ttext $(KERNEL_ENTRY_ADDRESS) $< -o $@
 #	-m $(LD_M_OPT) $(KERNEL_TMP)
 #	$(OBJCOPY) -I $(OBJCOPY_I_OPT) -O $(KERNEL_TMP) $< $@
 
