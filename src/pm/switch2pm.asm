@@ -43,7 +43,7 @@ begin_pm:
 	mov ebx, msg_pm_begin
 	call print_d2vm
 
-	call 0x20200
+	call 0x20000
 
 	jmp $
 
