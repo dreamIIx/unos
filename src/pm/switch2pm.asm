@@ -15,7 +15,6 @@
 [BITS 16]
 
 switch_to_pm:
-    cli
     lgdt [gdt_descriptor]
     
     mov eax, cr0
