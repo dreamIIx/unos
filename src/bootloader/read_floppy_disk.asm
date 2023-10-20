@@ -5,8 +5,7 @@
 [BITS 16]
 
 disk_load:
-    mov ax, 0x0
-    mov ds, ax
+    mov di, 0x0
 
     mov ah, 0x02    ; 0x2 - read sectors from drive
     mov al, 1       ; read DH sector
@@ -19,9 +18,6 @@ loop_load:
     int 0x13
     jc disk_error
 
-    mov ah, 0x02    ; 0x2 - read sectors from drive
-
-    push ax
     mov ax, es
     add ax, 0x20
     mov es, ax
@@ -42,12 +38,10 @@ loop_load:
     add ch, 1
 
 continue:
-    mov ax, ds
-    add ax, 0x1
-    cmp ax, 768
-    mov ds, ax
+    add di, 0x1
+    cmp di, 768
     
-    pop ax
+    mov ax, 0x201
     jne loop_load
     ret
 
