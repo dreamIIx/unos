@@ -5,13 +5,11 @@
 [BITS 16]
 
 disk_load:
-    xor cx, cx
-
     mov ah, 0x02    ; 0x2 - read sectors from drive
     mov al, 1      ; read DH sector
     mov ch, 0x00    ; select cylinder 0
     mov dh, 0x00    ; select head 0
-    mov cl, 0x02    ; select sector 2 (512B each sector, so it follows out boot sector)
+    mov cl, 0x01    ; select sector 2 (512B each sector, so it follows out boot sector)
 
 loop_load:
     int 0x13
@@ -43,9 +41,8 @@ loop_load:
     add ch, 1
 
 continue:
-    add cx, 0x1
-    add [sector_counter], word 0x1
-    cmp [sector_counter], word 896
+    add cx, word 0x1
+    cmp cx, word 768
     jne loop_load
     ret
 

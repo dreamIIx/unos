@@ -72,11 +72,11 @@ $(KERNEL_O): $(KERNEL_C)
 	$(GCC) -m32 -fno-pie -ffreestanding -c $< -o $@
 #	-m32
 
-$(KERNEL_BIN): $(KERNEL_O) $(KERNEL_ENTRY_O)
+$(KERNEL_BIN): $(KERNEL_ENTRY_O) $(KERNEL_O)
 	$(info [MAKE] building: $@)
-	$(LD) -m elf_i386 -Ttext $(KERNEL_ENTRY_ADDRESS) $^ -o $@
+	$(LD) -m i386pe -Ttext $(KERNEL_ENTRY_ADDRESS) $^ -o $(KERNEL_TMP)
 #	$(KERNEL_TMP)
-#	$(OBJCOPY) -I $(OBJCOPY_I_OPT) -O $(KERNEL_TMP) $< $@
+	$(OBJCOPY) -I pe-i386 -O binary $(KERNEL_TMP) $@
 
 $(BOOTLOADER_BIN): $(BOOTLOADER_ASM) ./src/rm/io/print.asm ./src/rm/io/print_hex.asm ./src/bootloader/read_floppy_disk.asm ./src/rm/misc/accumulate_sum.asm ./src/pm/switch2pm.asm
 	$(info [MAKE] building: $@)

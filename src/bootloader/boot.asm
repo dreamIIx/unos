@@ -1,7 +1,7 @@
 [ORG 0x7c00]
 [BITS 16]
 
-KERNEL_OFFSET_ES equ 0x2020
+KERNEL_OFFSET_ES equ 0x2000 ;!!! 0x2000 (VBR copy)
 KERNEL_OFFSET_BX equ 0
 
 main:
@@ -12,17 +12,13 @@ main:
 	cli
 	mov ss, ax
 	mov sp, 0x7c00
-	sti
-	mov [boot_drive], dl
 
 	mov si, os_boot_msg
 	call print
 
 	mov ax, KERNEL_OFFSET_ES
 	mov es, ax
-	mov bx, KERNEL_OFFSET_BX  
-	mov dh, 15
-	mov dl, [boot_drive]
+	mov bx, KERNEL_OFFSET_BX
 	call disk_load
 
 	;mov si, KERNEL_OFFSET_ES

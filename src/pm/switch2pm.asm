@@ -36,14 +36,11 @@ init_pm:
 
     mov ebp, 0x20000
     mov esp, ebp
-
-    call begin_pm
-
-begin_pm:
+    
 	mov ebx, msg_pm_begin
 	call print_d2vm
 
-	call 0x20000
+	call 0x20200
 
 	jmp $
 
