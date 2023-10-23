@@ -21,7 +21,7 @@ switch_to_pm:
     or eax, 0x1
     mov cr0, eax
 
-    jmp CODE_SEG:init_pm
+    jmp CODE_SEG:init_pm + 0x7c00
 
 [BITS 32]
 
@@ -36,10 +36,10 @@ init_pm:
     mov ebp, 0x20000
     mov esp, ebp
     
-	mov ebx, msg_pm_begin
+	mov ebx, ds:msg_pm_begin
 	call print_d2vm
 
-	call 0x20200
+	call 0x20200 - 0x7c00
 
 	jmp $
 

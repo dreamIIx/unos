@@ -1,17 +1,18 @@
-[ORG 0x7c00]
 [BITS 16]
 
-KERNEL_OFFSET_ES equ 0x2000 ;!!! 0x2000 (VBR copy)
+KERNEL_OFFSET_ES equ 0x2000
 KERNEL_OFFSET_BX equ 0
 
 main:
 	xor ax, ax
-	mov ds, ax
 	mov es, ax
 
 	cli
 	mov ss, ax
-	mov sp, 0x7c00
+	mov sp, ax
+	mov ax, 0x7c0
+	mov ds, ax
+	mov bp, 0x7c00
 
 	mov si, os_boot_msg
 	call print
@@ -54,8 +55,6 @@ main:
 ;	%include "./src/rm/misc/accumulate_sum.asm"
 ;%endif
 
-boot_drive:
-	DB 0
 os_boot_msg:
 	DB 'Hello world!', 0x0d, 0x0a, 0
 
@@ -65,17 +64,3 @@ os_boot_msg:
 
 times 510-($-$$) DB 0
 dw 0xaa55
-
-;times 510 DB 0
-;dw 0x3001
-;dw 0x3001
-;times 510 DB 0
-;dw 0x0203
-;times 510 DB 0
-;dw 'GL'
-;times 510 DB 0
-;dw 'HF'
-;times 510 DB 0
-
-;times 456190 DB 1
-;dw 'ye'
