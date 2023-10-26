@@ -26,11 +26,8 @@ switch_to_pm:
 [BITS 32]
 
 init_pm:
-    
-xchg bx, bx
     mov ax, DATA_SEG
     mov ds, ax
-    
     mov ss, ax
     mov es, ax
     mov fs, ax
@@ -39,9 +36,7 @@ xchg bx, bx
     mov ebp, 0x20000
     mov esp, ebp
     
-    xchg bx, bx
 	mov ebx, msg_pm_begin + 0x20000
-    xchg bx, bx
 	call print_d2vm
 
 	call 0x20200 - 0x7c00

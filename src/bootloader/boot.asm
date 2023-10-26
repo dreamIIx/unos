@@ -9,7 +9,7 @@ main:
 
 	cli
 	mov ss, ax
-	mov sp, ax
+	mov sp, 0x7c00
 	mov ax, 0x7c0
 	mov ds, ax
 	mov bp, 0x7c00

@@ -7,14 +7,14 @@
 disk_load:
     mov di, 0x0
 
-    mov ah, 0x02    ; 0x2 - read sectors from drive
-    mov al, 1       ; read DH sector
     mov ch, 0x00    ; select cylinder 0
     mov dh, 0x00    ; select head 0
     mov cl, 0x01    ; select sector 1 (512B each sector, so it follows out boot sector)
                     ; now read w/bootloader
                     
 loop_load:
+    mov ah, 0x02    ; 0x2 - read sectors from drive
+    mov al, 1       ; read DH sector
     int 0x13
     jc disk_error
 
@@ -24,14 +24,12 @@ loop_load:
 
     add cl, 0x1
 
-    cmp cl, 19     ; == 0x12
-    jne continue
-    mov ax, 65472
-    and cx, ax
+    cmp cl, 0x13
+    jl continue
 
-    mov cl, 1
+    and cx, 0xffc0
+    add cl, 1
 
-    cmp dh, 0x1
     xor dh, 0x1
     jne continue
 
@@ -41,7 +39,6 @@ continue:
     add di, 0x1
     cmp di, 768
     
-    mov ax, 0x201
     jne loop_load
     ret
 

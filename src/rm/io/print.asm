@@ -5,9 +5,7 @@
 [BITS 16]
 
 print:
-	push si
-	push ax
-	push bx
+	pusha
 
 print_loop:
 	lodsb
@@ -19,7 +17,5 @@ print_loop:
 	jmp print_loop
 
 done_print:
-	pop bx
-	pop ax
-	pop si
+	popa
 	ret
