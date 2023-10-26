@@ -1,5 +1,5 @@
 [BITS 32]
-[extern main]
+[extern _entry_point]
 
-call main
+call _entry_point
 jmp $

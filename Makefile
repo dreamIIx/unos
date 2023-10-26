@@ -24,11 +24,12 @@ KERNEL_ENTRY_ADDRESS = 0x20200
 ifeq ($(OS), Windows_NT)
 	ASM = ${NASM_PATH}\nasm
 	DD = ${CYGWIN_PATH}\bin\dd
-	GCC = 
+	GCC = gcc
 	MCOPY = 
 	MKFS = 
-	LD = 
-	OBJCOPY = 
+	LD = ld
+	LD_M_OPT = i386pe
+	OBJCOPY = objcopy
 	OD = ${CYGWIN_PATH}\bin\od
 	OD_OPT = -t x1 -A n
 	RM = 
@@ -69,7 +70,7 @@ $(KERNEL_ENTRY_O): $(KERNEL_ENTRY_ASM)
 
 $(KERNEL_O): $(KERNEL_C)
 	$(info [MAKE] building: $@)
-	$(GCC) -m32 -fno-pie -ffreestanding -c $< -o $@
+	$(GCC) -m32 -ffreestanding  -nostdlib -lgcc -c $< -o $@
 #	-m32
 
 $(KERNEL_BIN): $(KERNEL_ENTRY_O) $(KERNEL_O)
@@ -78,7 +79,7 @@ $(KERNEL_BIN): $(KERNEL_ENTRY_O) $(KERNEL_O)
 #	$(KERNEL_TMP)
 	$(OBJCOPY) -I pe-i386 -O binary $(KERNEL_TMP) $@
 
-$(BOOTLOADER_BIN): $(BOOTLOADER_ASM) ./src/rm/io/print.asm ./src/rm/io/print_hex.asm ./src/bootloader/read_floppy_disk.asm ./src/rm/misc/accumulate_sum.asm ./src/pm/switch2pm.asm
+$(BOOTLOADER_BIN): $(BOOTLOADER_ASM) ./src/rm/io/print.asm ./src/rm/io/print_hex.asm ./src/bootloader/read_floppy_disk.asm ./src/rm/misc/accumulate_sum.asm ./src/pm/switch2pm.asm ./src/pm/gdt.asm
 	$(info [MAKE] building: $@)
 	$(ASM) -fbin $< -o $@
 	$(OD) $(OD_OPT) $@
