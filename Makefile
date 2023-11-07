@@ -70,7 +70,7 @@ $(KERNEL_ENTRY_O): $(KERNEL_ENTRY_ASM)
 
 $(KERNEL_O): $(KERNEL_C)
 	$(info [MAKE] building: $@)
-	$(GCC) -m32 -fno-pie -ffreestanding -nostdlib -lgcc -c $< -o $@
+	$(GCC) -m32 -mno-sse -fno-pie -ffreestanding -nostdlib -lgcc -O0 -c $< -o $@
 #	-m32
 
 $(KERNEL_BIN): $(KERNEL_ENTRY_O) $(KERNEL_O)

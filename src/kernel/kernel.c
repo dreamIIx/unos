@@ -201,16 +201,49 @@ void printf(char *fmt, ...) {
 
                     str_reverse(buffer, buffer + counter);
                     print_string(buffer, color);
-                } else if (mode == 'x') {
+                } else if (mode == 'x' || mode == 'X') {
                     int b = va_arg(a, int);
                     print_string("0x", color);
+                    int a = sizeof(int);
+                    char buffer[5] = "\0\0\0\0";
 
                     int bc = b;
+                    int counter = 0;
+                    if (bc < 0) {
+                        bc *= -1;
+                    }
+                    while (bc != 0) {
+                        int temp = bc % 16;
+                        char symbol;
+                        if (temp > 9) {
+                            if (mode == 'X') {
+                                symbol = temp + 'A' - 10;
+                            } else {
+                                symbol = temp + 'a' - 10;
+                            }
+                        } else {
+                            symbol = temp + 48;
+                        }
+                        buffer[counter++] = symbol;
+                        bc >>= 4;
+                    }
+
+                    str_reverse(buffer, buffer + counter - 1);
+                    print_string(buffer, color);
                 } else if (mode == 'b') {
-                    int b = va_arg(a, int);
+                    unsigned int b = (unsigned) va_arg(a, int);
                     print_string("0b", color);
+                    char buffer[32] = {0};
 
-                    int bc = b;
+                    unsigned int bc = b;
+                    int counter = 0;
+                    while (bc != 0) {
+                        buffer[counter++] = (char)((bc & 1) + '0');
+                        bc >>= 1;
+                    }
+
+                    str_reverse(buffer, buffer + counter - 1);
+                    print_string(buffer, color);
                 } else {
                     end_line();
                     print_string("UNSUPPORTED FORMAT (", RED);
@@ -254,7 +287,7 @@ void entry_point()
     vga_clear_screen();
 
     init_printer();
-    printf("%s_PURPLE!asdasd\n%%%d", "nbv", -3242);
+    printf("%b", -20);
 
     while(1) {}
 }
