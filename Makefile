@@ -65,29 +65,36 @@ $(FLOPPY_IMG): $(BOOTLOADER_BIN) $(KERNEL_BIN)
 #	$(MCOPY) -i $@ $(word 2,$^) "::kernel.bin"
 	$(DD) conv=notrunc seek=1 if=$(word 2,$^) of=$@
 
+$(KERNEL_BUILD_DIR)/print_d2vm.asm.o: $(SOURCE_DIR)/pm/io/print_d2vm.asm
+	$(ASM) -f elf $< -o $@
+
 $(KERNEL_ENTRY_O): $(KERNEL_ENTRY_ASM)
 	$(ASM) -f elf $< -o $@
 
 $(KERNEL_O): $(KERNEL_C)
 	$(info [MAKE] building: $@)
-	$(GCC) -m32 -mno-sse -fno-pie -ffreestanding -nostdlib -lgcc -O0 -c $< -o $@
+	$(GCC) -Wall -m32 -mno-sse -fno-pie -ffreestanding -nostdlib -O0 -fno-stack-protector -c $< -o $@
 #	-m32
 
-$(KERNEL_BIN): $(KERNEL_ENTRY_O) $(KERNEL_O)
+$(KERNEL_BIN): $(KERNEL_ENTRY_O) $(KERNEL_O) $(KERNEL_BUILD_DIR)/print_d2vm.asm.o
 	$(info [MAKE] building: $@)
 	$(LD) -m i386pe -Ttext $(KERNEL_ENTRY_ADDRESS) $^ -o $(KERNEL_TMP)
 #	$(KERNEL_TMP)
 	$(OBJCOPY) -I pe-i386 -O binary $(KERNEL_TMP) $@
 
-$(BOOTLOADER_BIN): $(BOOTLOADER_ASM) ./src/rm/io/print.asm ./src/rm/io/print_hex.asm ./src/bootloader/read_floppy_disk.asm ./src/rm/misc/accumulate_sum.asm ./src/pm/switch2pm.asm ./src/pm/gdt.asm
+$(BOOTLOADER_BIN): $(BOOTLOADER_ASM) $(SOURCE_DIR)/rm/io/print.asm							\
+	$(SOURCE_DIR)/bootloader/read_floppy_disk.asm $(SOURCE_DIR)/pm/switch2pm.asm			\
+	$(SOURCE_DIR)/pm/gdt.asm $(SOURCE_DIR)/pm/io/print_d2vm.asm
 	$(info [MAKE] building: $@)
 	$(ASM) -fbin $< -o $@
 	$(OD) $(OD_OPT) $@
 
 clean_boot:
-	$(RM) -f $(FLOPPY_IMG)
-	$(RM) -f $(KERNEL_ENTRY_O)
-	$(RM) -f $(KERNEL_O)
-	$(RM) -f $(KERNEL_TMP)
-	$(RM) -f $(KERNEL_BIN)
-	$(RM) -f $(BOOTLOADER_BIN)
+	$(RM) -f $(BOOTLOADER_BUILD_DIR)/*
+	$(RM) -f $(KERNEL_BUILD_DIR)/*
+#	$(RM) -f $(FLOPPY_IMG)
+#	$(RM) -f $(KERNEL_ENTRY_O)
+#	$(RM) -f $(KERNEL_O)
+#	$(RM) -f $(KERNEL_TMP)
+#	$(RM) -f $(KERNEL_BIN)
+#	$(RM) -f $(BOOTLOADER_BIN)

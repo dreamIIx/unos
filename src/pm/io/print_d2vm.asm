@@ -2,6 +2,8 @@
     %define PRINT_D2VM
 %endif
 
+[global asm_print_d2vm]
+
 ; Printing directly to video memory
 
 [BITS 32]
@@ -9,7 +11,10 @@
 VIDEO_MEMORY equ 0xb8000
 WHITE_ON_BLACK equ 0x0f
 
-print_d2vm:
+asm_print_d2vm:
+    push ebp
+    mov ebp, esp
+    mov ebx, [esp + 2 * 4]
     pusha
     mov edx, VIDEO_MEMORY
 
@@ -29,4 +34,6 @@ print_d2vm_loop:
 
 print_d2vm_done:
     popa
+    mov esp, ebp
+    pop ebp
     ret

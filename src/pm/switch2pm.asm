@@ -37,7 +37,8 @@ init_pm:
     mov esp, ebp
     
 	mov ebx, msg_pm_begin + 0x20000
-	call print_d2vm
+    push ebx
+	call asm_print_d2vm
 
 	call 0x20200 - 0x7c00
 
