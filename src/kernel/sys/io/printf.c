@@ -1,7 +1,7 @@
 #include "printf.h"
 
-static current_x; 
-static current_y;
+static int current_x; 
+static int current_y;
 
 void vga_print_char(char symbol, int x, int y, int foreground_color) {
     if (x >= 80 || y >= 25) return;
@@ -9,7 +9,7 @@ void vga_print_char(char symbol, int x, int y, int foreground_color) {
 }
 
 void vga_clear_screen() {
-    memzero(VGA_START, sizeof(short) * 25 * 80);
+    memzero((void*)VGA_START, sizeof(short) * 25 * 80);
 }
 
 void vga_print_string(char* str, int x, int y, int text_color) {
@@ -43,8 +43,7 @@ void end_line() {
 
 void print_char(char s, int color) {
     vga_print_char(s, current_x, current_y, color);
-    ++current_x;
-    if (current_x == 80) end_line();
+    if (++current_x == 80) end_line();
 }
 
 void print_string(char* str, int color) {
@@ -55,18 +54,17 @@ void print_string(char* str, int color) {
 }
 
 void printf(char* fmt, ...) {
-    char** a = &fmt + 1;
+    va_list a = va_start(fmt);
     for (char* i = fmt; *i; ++i) {
         if (*i == '%') {
             if (*(i + 1) == '%') {
                 print_char('%', WHITE);
                 ++i;
             } else {
-                char mode;
                 int color = WHITE;
 
                 // mode select
-                mode = *(i++ + 1);
+                char mode = *(i++ + 1);
 
                 // color select (iff defined)
                 if (*(i + 1) == '_') {
@@ -83,7 +81,7 @@ void printf(char* fmt, ...) {
                                             "BROWN\0GRAY\0DARK_GRAY\0LIGHT_BLUE\0LIGHT_GREEN\0"
                                             "LIGHT_CYAN\0LIGHT_RED\0LIGHT_PURPLE\0YELLOW\0WHITE";
                         char* cur_color = color_names;
-                        for (int i = 0; i < 16; ++i) {
+                        for (int i = 0; i < _LAST; ++i) {
                             if (string_compare(start, cur_color, stop - start)) {
                                 color = i;
                                 break;
@@ -98,55 +96,58 @@ void printf(char* fmt, ...) {
                     char* b = va_arg(a, char*);
                     print_string(b, color);
                 } else if (mode == 'd') {
-                    int b = va_arg(a, int);
-                    char buffer[12] = {0}; // (-)xxxxxxxxxx\0
-                    int bc = b;
+                    unsigned b = (unsigned) va_arg(a, int);
+#define _MAX_N_DIGITS_FOR_DEC_CASE (int)(12)
+                    char buffer[_MAX_N_DIGITS_FOR_DEC_CASE] = {0};
 
-                    int counter = 10;
-
-                    if (bc < 0) bc *= -1;
-                    while (bc) {
-                        buffer[counter--] = bc % 10 + 48;
-                        bc /= 10;
+                    int counter = _MAX_N_DIGITS_FOR_DEC_CASE - 1;
+                    int is_neg = 0;
+                    if (b & (1 << sizeof(int) * 8 - 1))
+                    {
+                        is_neg = 1;
+                        b = ~b + 1;
                     }
-
-                    if (b < 0)      buffer[counter] = '-';
-                    else            counter++;
+                    while (b) {
+                        buffer[--counter] = b % 10 + '0';
+                        b /= 10;
+                    }
+                    if (is_neg)
+                    {
+                        buffer[--counter] = '-';
+                    }
 
                     print_string(buffer + counter, color);
                 } else if (mode == 'x' || mode == 'X') {
                     int b = va_arg(a, int);
                     print_string("0x", color);
-                    char buffer[5] = {0};
+                    char buffer[sizeof(int) + 1] = {0};
 
-                    int bc = b;
                     int counter = 3;
-                    if (bc < 0) {
-                        bc *= -1;
+                    if (b < 0) {
+                        b *= -1;
                     }
-                    while (bc) {
-                        int temp = bc % 16;
+                    while (b) {
+                        int temp = b % 16;
                         char symbol;
                         if (temp > 9) {
-                            symbol = temp - 10 + (mode == 'X') ? 'A' : 'a'; 
+                            symbol = (temp - 10 + (mode == 'X')) ? 'A' : 'a'; 
                         } else {
                             symbol = temp + '0';
                         }
                         buffer[counter--] = symbol;
-                        bc >>= 4;
+                        b >>= 4;
                     }
 
                     print_string(buffer + counter + 1, color);
                 } else if (mode == 'b') {
-                    unsigned int b = (unsigned int) va_arg(a, int);
+                    unsigned b = (unsigned) va_arg(a, unsigned);
                     print_string("0b", color);
-                    char buffer[33] = {0};
+                    char buffer[sizeof(unsigned) * 8 + 1] = {0};
 
-                    unsigned int bc = b;
-                    int counter = 31;
-                    while (bc) {
-                        buffer[counter--] = (char)((bc & 1) + '0');
-                        bc >>= 1;
+                    int counter = sizeof(unsigned) * 8 - 1;
+                    while (b) {
+                        buffer[counter--] = (char)((b & 1) + '0');
+                        b >>= 1;
                     }
 
                     print_string(buffer + counter + 1, color);

@@ -75,13 +75,13 @@ $(KERNEL_ENTRY_O): $(KERNEL_ENTRY_ASM)
 	$(info [MAKE] building: $@)
 	$(ASM) -f elf $< -o $@
 
-$(KERNEL_O): $(KERNEL_C)																	\
+$(KERNEL_O): $(KERNEL_C)																			\
 	$(KERNEL_SOURCE_DIR)/sys/io/io.h $(KERNEL_SOURCE_DIR)/sys/memory/memory.h
 	$(info [MAKE] building: $@)
 	$(GCC) -Wall -m32 -mno-sse -fno-pie -ffreestanding -nostdlib -fno-stack-protector -c $< -o $@
 #	-m32
 
-$(KERNEL_BIN): $(KERNEL_ENTRY_O) $(KERNEL_O)												\
+$(KERNEL_BIN): $(KERNEL_ENTRY_O) $(KERNEL_O)														\
 	$(KERNEL_BUILD_DIR)/sys/memory/mem_utils.o $(KERNEL_BUILD_DIR)/sys/io/printf.o					\
 	$(BUILD_DIR)/pm/io/print_d2vm.o
 	$(info [MAKE] building: $@)
@@ -89,9 +89,9 @@ $(KERNEL_BIN): $(KERNEL_ENTRY_O) $(KERNEL_O)												\
 #	$(KERNEL_TMP)
 	$(OBJCOPY) -I pe-i386 -O binary $(KERNEL_TMP) $@
 
-$(BOOTLOADER_BIN): $(BOOTLOADER_ASM) $(SOURCE_DIR)/rm/io/print.asm							\
-	$(SOURCE_DIR)/bootloader/read_floppy_disk.asm $(SOURCE_DIR)/pm/switch2pm.asm			\
-	$(SOURCE_DIR)/pm/gdt.asm $(SOURCE_DIR)/pm/io/print_d2vm.asm								\
+$(BOOTLOADER_BIN): $(BOOTLOADER_ASM) $(SOURCE_DIR)/rm/io/print.asm									\
+	$(SOURCE_DIR)/bootloader/read_floppy_disk.asm $(SOURCE_DIR)/pm/switch2pm.asm					\
+	$(SOURCE_DIR)/pm/gdt.asm $(SOURCE_DIR)/pm/io/print_d2vm.asm										\
 	$(info [MAKE] building: $@)
 	$(ASM) -fbin $< -o $@
 	$(OD) $(OD_OPT) $@

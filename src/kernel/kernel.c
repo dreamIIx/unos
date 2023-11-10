@@ -1,18 +1,16 @@
-// extern void asm_print_d2vm(char* src);
+extern void asm_print_d2vm(char* src);
 
 #include "./sys/io/io.h"
 #include "./sys/memory/memory.h"
 
 // compare [first, first_end) and second (until '\0')
-int string_compare(char* first, char* second, int n)
-{
+int string_compare(char* first, char* second, int n) {
     int res = 0;
     while(*first && *second && n-- && !(res = (*first++ - *second++)));
     return !res;
 }
 
-void str_reverse(char* str_start, char* str_end)
-{
+void str_reverse(char* str_start, char* str_end) {
     int len = (str_end - str_start + 1) / 2;
     for (int i = 0; i < len; ++i)
     {
@@ -23,12 +21,11 @@ void str_reverse(char* str_start, char* str_end)
 }
 
 
-void entry_point()
-{
+void entry_point() {
     init_printer();
-    printf("%b %b_RED!hello world!", 20, -165);
-
-    // asm_print_d2vm("Hello from C!");
+    printf(         "              %b %d_RED!hello world!", 20, 0x80000000);
+ //                  ||||||||||||||
+    asm_print_d2vm( "Hello from C!");
     
     while (1) {}
 }
