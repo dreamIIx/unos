@@ -3,94 +3,65 @@
 static current_x; 
 static current_y;
 
-void vga_print_char(char symbol, int x, int y, int foreground_color)
-{
+void vga_print_char(char symbol, int x, int y, int foreground_color) {
     if (x >= 80 || y >= 25) return;
-    *((char *)(VGA_START + 2 * (y * 80 + x))) = symbol;
-    *((char *)(VGA_START + 2 * (y * 80 + x)) + 1) = ((char)foreground_color);
+    *((short *)(VGA_START + 2 * (y * 80 + x))) = ((short) foreground_color) << 8 | (short) symbol;
 }
 
-void vga_clear_screen()
-{
-    for (int shift_x = 0; shift_x < 80; ++shift_x)
-    {
-        for (int shift_y = 0; shift_y < 25; ++shift_y)
-        {
-            vga_print_char(0, shift_x, shift_y, BLACK);
-        }
-    }
+void vga_clear_screen() {
+    memzero(VGA_START, sizeof(short) * 25 * 80);
 }
 
-void vga_print_string(char* str, int x, int y, int text_color)
-{
+void vga_print_string(char* str, int x, int y, int text_color) {
     int current_x = x;
     int current_y = y;
     int shift = 0;
-    while (str[shift])
-    {
+    while (str[shift]) {
         vga_print_char(str[shift++], current_x++, current_y, text_color);
-        if (current_x >= 80)
-        {
+        if (current_x >= 80) {
             end_line();
         }
     }
 }
 
-void shift_up()
-{
-    for (int i = 1; i < 25; i++)
-    {
-        for (int j = 0; j < 80; j++)
-        {
-            *((char*) (VGA_START + 2 * ((i - 1) * 80 + j))) = *((char*) (VGA_START + 2 * (i * 80 + j)));
-        }
-    }
+void shift_up() {
+    memcpy(VGA_START, VGA_START + sizeof(short) * 80, sizeof(short) * 24 * 80);
+    memzero(VGA_START + sizeof(short) * 80 * 24, sizeof(short) * 80);
 }
 
-void init_printer()
-{
+void init_printer() {
     current_x = 0;
     current_y = 0;
     vga_clear_screen();
 }
 
-void end_line()
-{
+void end_line() {
     if (current_y > 25) shift_up();
     else                ++current_y;
     current_x = 0;
 }
 
-void print_char(char s, int color)
-{
+void print_char(char s, int color) {
     vga_print_char(s, current_x, current_y, color);
     ++current_x;
     if (current_x == 80) end_line();
 }
 
-void print_string(char* str, int color)
-{
-    while (*str)
-    {
+void print_string(char* str, int color) {
+    while (*str) {
         print_char(*str, color);
         ++str;
     }
 }
 
-void printf(char* fmt, ...)
-{
+void printf(char* fmt, ...) {
     char** a = &fmt + 1;
-    for (char* i = fmt; *i; ++i)
-    {
-        if (*i == '%')
-        {
-            if (*(i + 1) == '%')
-            {
+    for (char* i = fmt; *i; ++i) {
+        if (*i == '%') {
+            if (*(i + 1) == '%') {
                 print_char('%', WHITE);
                 ++i;
-            }
-            else
-            {
+            } else {
                 char mode;
                 int color = WHITE;
 
@@ -98,119 +69,88 @@ void printf(char* fmt, ...)
                 mode = *(i++ + 1);
 
                 // color select (iff defined)
-                if (*(i + 1) == '_')
-                {
+                if (*(i + 1) == '_') {
                     i += 2;
                     char* start = i;
                     char* stop = i;
-                    while (*i != '!')
-                    {
+                    while (*i != '!') {
                         if (!*i) return;
                         stop = i++;
                     }
 
-                    if (start != stop)
-                    {
+                    if (start != stop) {
                         char* color_names = "BLACK\0BLUE\0GREEN\0CYAN\0RED\0PURPLE\0"
                                             "BROWN\0GRAY\0DARK_GRAY\0LIGHT_BLUE\0LIGHT_GREEN\0"
                                             "LIGHT_CYAN\0LIGHT_RED\0LIGHT_PURPLE\0YELLOW\0WHITE";
                         char* cur_color = color_names;
-                        for (int i = 0; i < 16; ++i)
-                        {
-                            if (string_compare(start, cur_color, stop - start))
-                            {
+                        for (int i = 0; i < 16; ++i) {
+                            if (string_compare(start, cur_color, stop - start)) {
                                 color = i;
                                 break;
                             }
-                            while (*cur_color++) {}
+                            while (*cur_color++);
                         }
                     }
                 }
 
                 // print
-                if (mode == 's')
-                {
+                if (mode == 's') {
                     char* b = va_arg(a, char*);
                     print_string(b, color);
-                }
-                else if (mode == 'd')
-                {
+                } else if (mode == 'd') {
                     int b = va_arg(a, int);
                     char buffer[12] = {0}; // (-)xxxxxxxxxx\0
                     int bc = b;
 
-                    int counter = 0;
+                    int counter = 10;
 
                     if (bc < 0) bc *= -1;
-                    while (bc)
-                    {
-                        buffer[counter++] = bc % 10 + 48;
+                    while (bc) {
+                        buffer[counter--] = bc % 10 + 48;
                         bc /= 10;
                     }
 
                     if (b < 0)      buffer[counter] = '-';
-                    else            counter--;
+                    else            counter++;
 
-                    str_reverse(buffer, buffer + counter);
-                    print_string(buffer, color);
-                }
-                else if (mode == 'x' || mode == 'X')
-                {
+                    print_string(buffer + counter, color);
+                } else if (mode == 'x' || mode == 'X') {
                     int b = va_arg(a, int);
                     print_string("0x", color);
                     char buffer[5] = {0};
 
                     int bc = b;
-                    int counter = 0;
-                    if (bc < 0)
-                    {
+                    int counter = 3;
+                    if (bc < 0) {
                         bc *= -1;
                     }
-                    while (bc)
-                    {
+                    while (bc) {
                         int temp = bc % 16;
                         char symbol;
-                        if (temp > 9)
-                        {
-                            if (mode == 'X')
-                            {
-                                symbol = temp + 'A' - 10;
-                            }
-                            else
-                            {
-                                symbol = temp + 'a' - 10;
-                            }
+                        if (temp > 9) {
+                            symbol = temp - 10 + (mode == 'X') ? 'A' : 'a'; 
+                        } else {
+                            symbol = temp + '0';
                         }
-                        else
-                        {
-                            symbol = temp + 48;
-                        }
-                        buffer[counter++] = symbol;
+                        buffer[counter--] = symbol;
                         bc >>= 4;
                     }
 
-                    str_reverse(buffer, buffer + counter - 1);
-                    print_string(buffer, color);
-                }
-                else if (mode == 'b')
-                {
-                    unsigned int b = (unsigned) va_arg(a, int);
+                    print_string(buffer + counter + 1, color);
+                } else if (mode == 'b') {
+                    unsigned int b = (unsigned int) va_arg(a, int);
                     print_string("0b", color);
-                    char buffer[32] = {0};
+                    char buffer[33] = {0};
 
                     unsigned int bc = b;
-                    int counter = 0;
-                    while (bc)
-                    {
-                        buffer[counter++] = (char)((bc & 1) + '0');
+                    int counter = 31;
+                    while (bc) {
+                        buffer[counter--] = (char)((bc & 1) + '0');
                         bc >>= 1;
                     }
 
-                    str_reverse(buffer, buffer + counter - 1);
-                    print_string(buffer, color);
-                }
-                else
-                {
+                    print_string(buffer + counter + 1, color);
+                } else {
                     end_line();
                     print_string("UNSUPPORTED FORMAT (", RED);
                     print_char(mode, RED);
@@ -218,14 +158,9 @@ void printf(char* fmt, ...)
                     end_line();
                 }
             }
-        }
-        else if (*i == '\n')
-        {
-            vga_print_char('\n', current_x, current_y, BLACK);
+        } else if (*i == '\n') {
             end_line();
-        }
-        else
-        {
+        } else {
             print_char(*i, WHITE);
         }
     }

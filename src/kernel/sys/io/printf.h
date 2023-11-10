@@ -1,5 +1,7 @@
 #pragma once
 
+#include "../memory/memory.h"
+
 #define VGA_START           0xb8000
 #define va_arg(list, type)  ( ( (type*) ( list = (char*) list + sizeof(type) ) )[-1] )
 
