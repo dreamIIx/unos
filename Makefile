@@ -57,6 +57,45 @@ floppy: bootloader kernel $(FLOPPY_IMG)
 kernel: $(KERNEL_BIN)
 bootloader: $(BOOTLOADER_BIN)
 
+$(BUILD_DIR)/pm/io/print_d2vm.o: $(SOURCE_DIR)/pm/io/print_d2vm.asm
+	$(info [MAKE] building: $@)
+	$(ASM) -f elf $< -o $@
+
+$(KERNEL_BUILD_DIR)/sys/io/printf.o: $(KERNEL_SOURCE_DIR)/sys/io/printf.c							\
+	$(KERNEL_SOURCE_DIR)/sys/io/printf.h
+	$(info [MAKE] building: $@)
+	$(GCC) -Wall -m32 -mno-sse -fno-pie -ffreestanding -nostdlib -fno-stack-protector -c $< -o $@
+
+$(KERNEL_BUILD_DIR)/sys/memory/mem_utils.o: $(KERNEL_SOURCE_DIR)/sys/memory/mem_utils.c				\
+	$(KERNEL_SOURCE_DIR)/sys/memory/mem_utils.h
+	$(info [MAKE] building: $@)
+	$(GCC) -Wall -m32 -mno-sse -fno-pie -ffreestanding -nostdlib -fno-stack-protector -c $< -o $@
+
+$(KERNEL_ENTRY_O): $(KERNEL_ENTRY_ASM)
+	$(info [MAKE] building: $@)
+	$(ASM) -f elf $< -o $@
+
+$(KERNEL_O): $(KERNEL_C)																	\
+	$(KERNEL_SOURCE_DIR)/sys/io/io.h $(KERNEL_SOURCE_DIR)/sys/memory/memory.h
+	$(info [MAKE] building: $@)
+	$(GCC) -Wall -m32 -mno-sse -fno-pie -ffreestanding -nostdlib -fno-stack-protector -c $< -o $@
+#	-m32
+
+$(KERNEL_BIN): $(KERNEL_ENTRY_O) $(KERNEL_O)												\
+	$(KERNEL_BUILD_DIR)/sys/memory/mem_utils.o $(KERNEL_BUILD_DIR)/sys/io/printf.o					\
+	$(BUILD_DIR)/pm/io/print_d2vm.o
+	$(info [MAKE] building: $@)
+	$(LD) -m i386pe -Ttext $(KERNEL_ENTRY_ADDRESS) $^ -o $(KERNEL_TMP)
+#	$(KERNEL_TMP)
+	$(OBJCOPY) -I pe-i386 -O binary $(KERNEL_TMP) $@
+
+$(BOOTLOADER_BIN): $(BOOTLOADER_ASM) $(SOURCE_DIR)/rm/io/print.asm							\
+	$(SOURCE_DIR)/bootloader/read_floppy_disk.asm $(SOURCE_DIR)/pm/switch2pm.asm			\
+	$(SOURCE_DIR)/pm/gdt.asm $(SOURCE_DIR)/pm/io/print_d2vm.asm								\
+	$(info [MAKE] building: $@)
+	$(ASM) -fbin $< -o $@
+	$(OD) $(OD_OPT) $@
+
 $(FLOPPY_IMG): $(BOOTLOADER_BIN) $(KERNEL_BIN)
 	$(info [MAKE] building: $@)
 	$(DD) bs=512 count=2880 if=/dev/zero of=$@
@@ -65,33 +104,8 @@ $(FLOPPY_IMG): $(BOOTLOADER_BIN) $(KERNEL_BIN)
 #	$(MCOPY) -i $@ $(word 2,$^) "::kernel.bin"
 	$(DD) conv=notrunc seek=1 if=$(word 2,$^) of=$@
 
-$(KERNEL_BUILD_DIR)/print_d2vm.asm.o: $(SOURCE_DIR)/pm/io/print_d2vm.asm
-	$(ASM) -f elf $< -o $@
-
-$(KERNEL_ENTRY_O): $(KERNEL_ENTRY_ASM)
-	$(ASM) -f elf $< -o $@
-
-$(KERNEL_O): $(KERNEL_C)
-	$(info [MAKE] building: $@)
-	$(GCC) -Wall -m32 -mno-sse -fno-pie -ffreestanding -nostdlib -O0 -fno-stack-protector -c $< -o $@
-#	-m32
-
-$(KERNEL_BIN): $(KERNEL_ENTRY_O) $(KERNEL_O) $(KERNEL_BUILD_DIR)/print_d2vm.asm.o
-	$(info [MAKE] building: $@)
-	$(LD) -m i386pe -Ttext $(KERNEL_ENTRY_ADDRESS) $^ -o $(KERNEL_TMP)
-#	$(KERNEL_TMP)
-	$(OBJCOPY) -I pe-i386 -O binary $(KERNEL_TMP) $@
-
-$(BOOTLOADER_BIN): $(BOOTLOADER_ASM) $(SOURCE_DIR)/rm/io/print.asm							\
-	$(SOURCE_DIR)/bootloader/read_floppy_disk.asm $(SOURCE_DIR)/pm/switch2pm.asm			\
-	$(SOURCE_DIR)/pm/gdt.asm $(SOURCE_DIR)/pm/io/print_d2vm.asm
-	$(info [MAKE] building: $@)
-	$(ASM) -fbin $< -o $@
-	$(OD) $(OD_OPT) $@
-
 clean_boot:
-	$(RM) -f $(BOOTLOADER_BUILD_DIR)/*
-	$(RM) -f $(KERNEL_BUILD_DIR)/*
+#	$(info [MAKE] do  $@:)
 #	$(RM) -f $(FLOPPY_IMG)
 #	$(RM) -f $(KERNEL_ENTRY_O)
 #	$(RM) -f $(KERNEL_O)

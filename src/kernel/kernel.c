@@ -1,18 +1,7 @@
 extern void asm_print_d2vm(char* src);
 
-#include "printf.h"
-#include "mem_utils.h"
-
-void shift_up()
-{
-    for (int i = 1; i < 25; i++)
-    {
-        for (int j = 0; j < 80; j++)
-        {
-            *((char*) (VGA_START + 2 * ((i - 1) * 80 + j))) = *((char*) (VGA_START + 2 * (i * 80 + j)));
-        }
-    }
-}
+#include "./sys/io/io.h"
+#include "./sys/memory/memory.h"
 
 // std
 
