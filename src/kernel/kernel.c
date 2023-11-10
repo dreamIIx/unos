@@ -71,18 +71,6 @@ void shift_up()
 
 // std
 
-struct va_list
-{
-    int* current_pos;
-};
-
-struct va_list va_start(int* start_pos)
-{
-    struct va_list list;
-    list.current_pos = start_pos + 1;
-    return list;
-}
-
 // compare [first, first_end) and second (until '\0')
 int string_compare(char* first, char* second, int n)
 {
@@ -228,6 +216,7 @@ void printf(char* fmt, ...)
                     {
                         bc *= -1;
                     }
+            vga_print_char('\n', current_x, current_y, BLACK);
                     while (bc)
                     {
                         int temp = bc % 16;
@@ -295,8 +284,6 @@ void printf(char* fmt, ...)
 
 void entry_point()
 {
-    asm_print_d2vm("Hello from C!");
-    
     char* sample = "Finally!\n";
 
     vga_clear_screen();
@@ -311,6 +298,8 @@ void entry_point()
 
     init_printer();
     printf("%b %b_RED!hello world!", 20, 165);
+
+    asm_print_d2vm("Hello from C!");
     
     while (1) {}
 }
