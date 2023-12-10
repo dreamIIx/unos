@@ -3,6 +3,12 @@
 static int current_x; 
 static int current_y;
 
+int string_compare(const char* first, const char* second, int n) {
+    int res = 0;
+    while(*first && *second && n-- && !(res = (*first++ - *second++)));
+    return !res;
+}
+
 void vga_print_char(char symbol, int x, int y, int foreground_color) {
     if (x >= 80 || y >= 25) return;
     *((short *)(VGA_START + 2 * (y * 80 + x))) = ((short) foreground_color) << 8 | (short) symbol;
@@ -25,8 +31,8 @@ void vga_print_string(char* str, int x, int y, int text_color) {
 }
 
 void shift_up() {
-    memcpy(VGA_START, VGA_START + sizeof(short) * 80, sizeof(short) * 24 * 80);
-    memzero(VGA_START + sizeof(short) * 80 * 24, sizeof(short) * 80);
+    memcpy((char*) VGA_START, (char*) VGA_START + sizeof(short) * 80, sizeof(short) * 24 * 80);
+    memzero((char*) VGA_START + sizeof(short) * 80 * 24, sizeof(short) * 80);
 }
 
 void init_printer() {
@@ -53,9 +59,9 @@ void print_string(char* str, int color) {
     }
 }
 
-void printf(char* fmt, ...) {
+void printf(const char* fmt, ...) {
     va_list a = va_start(fmt);
-    for (char* i = fmt; *i; ++i) {
+    for (const char* i = fmt; *i; ++i) {
         if (*i == '%') {
             if (*(i + 1) == '%') {
                 print_char('%', WHITE);
@@ -69,8 +75,8 @@ void printf(char* fmt, ...) {
                 // color select (iff defined)
                 if (*(i + 1) == '_') {
                     i += 2;
-                    char* start = i;
-                    char* stop = i;
+                    const char* start = i;
+                    const char* stop = i;
                     while (*i != '!') {
                         if (!*i) return;
                         stop = i++;
@@ -93,7 +99,7 @@ void printf(char* fmt, ...) {
 
                 // print
                 if (mode == 's') {
-                    char* b = va_arg(a, char*);
+                    char* b = &va_arg(a, char);
                     print_string(b, color);
                 } else if (mode == 'd') {
                     unsigned b = (unsigned) va_arg(a, int);

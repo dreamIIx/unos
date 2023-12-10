@@ -2,9 +2,9 @@
 
 // Why are the comments Russian?
 
-void* memcpy(void* dst, const void* src, int n) {
-    unsigned long* wdst = dst;  // текущая позиция в буфере назначения
-    unsigned long* wsrc = src;  // текущая позиция в источнике
+const void* memcpy(const void* dst, const void* src, int n) {
+    unsigned long* wdst = (unsigned long*) dst;  // текущая позиция в буфере назначения
+    unsigned long* wsrc = (unsigned long*) src;  // текущая позиция в источнике
     unsigned char* cdst;
     unsigned char* csrc;
     
@@ -24,7 +24,7 @@ void* memcpy(void* dst, const void* src, int n) {
 
 void* memzero(void* dst, int n) {
     int m;
-    unsigned long* wdst = dst;  // текущая позиция в буфере назначения
+    unsigned long* wdst = (unsigned long*) dst;  // текущая позиция в буфере назначения
     unsigned char* cdst;
     
     for(int i = 0, m = n / sizeof(long); i < m; ++i) {  // копируем основную часть блоками по 4 или 8 байт
