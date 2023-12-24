@@ -1,0 +1,25 @@
+#pragma once
+
+#include "./idt.c"
+
+#define __gen_tramplin(x) static void tramplin_##x() { panic_handler(0x##x); }
+#define __gen_tramplins(...) static void (*tramplins[])(void) = {__VA_ARGS__};
+
+static void panic_handler(int vector)
+{
+    kernel_panic("unhandled interrupt %x", vector);
+}
+
+void register_handlers()
+{
+    for (int i = 0; i < sizeof(tramplins) / sizeof(tramplins[0]); ++i)
+    {
+        void* handler = tramplins[i];
+        signed char* low_16_bits = (signed char*) handler;
+        signed char* high_16_bits = low_16_bits + 1;
+        InterruptDescriptor[i] = ...
+    }
+}
+
+// AUTO-GENERATED CODE IS BELOW
+
