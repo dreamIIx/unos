@@ -85,7 +85,7 @@ $(KERNEL_ENTRY_O): $(KERNEL_ENTRY_ASM)
 	$(info [MAKE] building: $@)
 	$(ASM) -f elf $< -o $@
 
-$(KERNEL_O): $(KERNEL_C)																	\
+$(KERNEL_O): $(KERNEL_C) $(KERNEL_BUILD_DIR)/sys/memory/alloc.o															\
 	$(KERNEL_SOURCE_DIR)/sys/io/io.h $(KERNEL_SOURCE_DIR)/sys/memory/memory.h
 	$(info [MAKE] building: $@)
 	$(GCC) -Wall -m32 -mno-sse -fno-pie -ffreestanding -nostdlib -fno-stack-protector -c $< -o $@
