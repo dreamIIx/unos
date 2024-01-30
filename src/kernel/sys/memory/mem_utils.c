@@ -23,7 +23,6 @@ const void* memcpy(const void* dst, const void* src, int n) {
 }
 
 void* memzero(void* dst, int n) {
-    int m;
     unsigned long* wdst = (unsigned long*) dst;  // текущая позиция в буфере назначения
     unsigned char* cdst;
     

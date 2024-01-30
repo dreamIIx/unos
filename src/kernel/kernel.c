@@ -1,7 +1,8 @@
-extern void asm_print_d2vm(char* src);
+//extern void asm_print_d2vm(char* src);
 
 #include "./sys/io/io.h"
 #include "./sys/memory/memory.h"
+#include "./sys/interruption.c"
 
 // compare [first, first_end) and second (until '\0')
 
@@ -20,7 +21,7 @@ void entry_point() {
     init_printer();
     printf(         "              %b %d_RED!hello world!", 20, 0x80000000);
  //                  ||||||||||||||
-    asm_print_d2vm( "Hello from C!");
-    
+ //   asm_print_d2vm( "Hello from C!");
+    register_handlers();
     while (1) {}
 }
