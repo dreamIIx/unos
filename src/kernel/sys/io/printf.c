@@ -126,25 +126,29 @@ void printf(const char* fmt, ...) {
                 } else if (mode == 'x' || mode == 'X') {
                     int b = va_arg(a, int);
                     print_string("0x", color);
-                    char buffer[sizeof(int) + 1] = {0};
+                    if (b != 0) {
+                        char buffer[sizeof(int) + 1] = {0};
 
-                    int counter = 3;
-                    if (b < 0) {
-                        b *= -1;
-                    }
-                    while (b) {
-                        int temp = b % 16;
-                        char symbol;
-                        if (temp > 9) {
-                            symbol = (temp - 10 + (mode == 'X')) ? 'A' : 'a'; 
-                        } else {
-                            symbol = temp + '0';
+                        int counter = 3;
+                        if (b < 0) {
+                            b *= -1;
                         }
-                        buffer[counter--] = symbol;
-                        b >>= 4;
-                    }
+                        while (b) {
+                            int temp = b % 16;
+                            char symbol;
+                            if (temp > 9) {
+                                symbol = temp - 10 + (mode == 'X' ? 'A' : 'a'); 
+                            } else {
+                                symbol = temp + '0';
+                            }
+                            buffer[counter--] = symbol;
+                            b >>= 4;
+                        }
 
-                    print_string(buffer + counter + 1, color);
+                        print_string(buffer + counter + 1, color);
+                    } else {
+                        print_char('0', color);
+                    }
                 } else if (mode == 'b') {
                     unsigned b = (unsigned) va_arg(a, unsigned);
                     print_string("0b", color);
@@ -157,12 +161,6 @@ void printf(const char* fmt, ...) {
                     }
 
                     print_string(buffer + counter + 1, color);
-                } else {
-                    end_line();
-                    print_string("UNSUPPORTED FORMAT (", RED);
-                    print_char(mode, RED);
-                    print_string(")!", RED);
-                    end_line();
                 }
             }
         } else if (*i == '\n') {

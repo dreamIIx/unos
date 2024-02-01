@@ -11,11 +11,12 @@ static void kernel_panic(char* str, int num)
 {
 	init_printer();
 	printf(str, num);
+	while (1);
 }
 
 static void panic_handler(int vector)
-{
-    kernel_panic("unhandled interrupt %x", vector);
+{    
+	kernel_panic("unhandled interrupt %x", vector);
 }
 
 
