@@ -1,5 +1,6 @@
-#include <stdint.h>
 #pragma once
+
+#include <stdint.h>
 
 #pragma pack(push, 1)
 typedef struct {

@@ -1,5 +1,6 @@
-#include "mem_utils.h"
 #pragma once
+
+#include "mem_utils.h"
 
 void* kernel_malloc(unsigned int size);
 

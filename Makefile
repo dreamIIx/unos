@@ -71,28 +71,24 @@ $(KERNEL_BUILD_DIR)/sys/memory/mem_utils.o: $(KERNEL_SOURCE_DIR)/sys/memory/mem_
 	$(info [MAKE] building: $@)
 	$(GCC) -Wall -m32 -mno-sse -fno-pie -ffreestanding -nostdlib -fno-stack-protector -c $< -o $@
 
-$(KERNEL_BUILD_DIR)/sys/memory/alloc.o: $(KERNEL_SOURCE_DIR)/sys/memory/alloc.c				\
+$(KERNEL_BUILD_DIR)/sys/memory/alloc.o: $(KERNEL_SOURCE_DIR)/sys/memory/alloc.c						\
 	$(KERNEL_SOURCE_DIR)/sys/memory/alloc.h
 	$(info [MAKE] building: $@)
 	$(GCC) -Wall -m32 -mno-sse -fno-pie -ffreestanding -nostdlib -fno-stack-protector -c $< -o $@
 
-$(KERNEL_BUILD_DIR)/sys/interruption.o: $(KERNEL_SOURCE_DIR)/sys/interruption.c				\
-	$(KERNEL_SOURCE_DIR)/sys/idt.h
+$(KERNEL_O): $(KERNEL_C) $(KERNEL_SOURCE_DIR)/sys/io/io.h											\
+	$(KERNEL_SOURCE_DIR)/sys/memory/memory.h $(KERNEL_SOURCE_DIR)/sys/interruption.hpp
 	$(info [MAKE] building: $@)
 	$(GCC) -Wall -m32 -mno-sse -fno-pie -ffreestanding -nostdlib -fno-stack-protector -c $< -o $@
+#	-m32
 
 $(KERNEL_ENTRY_O): $(KERNEL_ENTRY_ASM)
 	$(info [MAKE] building: $@)
 	$(ASM) -f elf $< -o $@
 
-$(KERNEL_O): $(KERNEL_C) $(KERNEL_BUILD_DIR)/sys/memory/alloc.o															\
-	$(KERNEL_SOURCE_DIR)/sys/io/io.h $(KERNEL_SOURCE_DIR)/sys/memory/memory.h
-	$(info [MAKE] building: $@)
-	$(GCC) -Wall -m32 -mno-sse -fno-pie -ffreestanding -nostdlib -fno-stack-protector -c $< -o $@
-#	-m32
-
-$(KERNEL_BIN): $(KERNEL_ENTRY_O) $(BUILD_DIR)/pm/io/print_d2vm.o $(KERNEL_O)												\
-	$(KERNEL_BUILD_DIR)/sys/memory/mem_utils.o $(KERNEL_BUILD_DIR)/sys/io/printf.o					
+$(KERNEL_BIN): $(KERNEL_ENTRY_O) $(KERNEL_O)												\
+	$(KERNEL_BUILD_DIR)/sys/io/printf.o $(BUILD_DIR)/pm/io/print_d2vm.o						\
+	$(KERNEL_BUILD_DIR)/sys/memory/alloc.o $(KERNEL_BUILD_DIR)/sys/memory/mem_utils.o
 	$(info [MAKE] building: $@)
 	$(LD) -m i386pe -Ttext $(KERNEL_ENTRY_ADDRESS) $^ -o $(KERNEL_TMP)
 #	$(KERNEL_TMP)

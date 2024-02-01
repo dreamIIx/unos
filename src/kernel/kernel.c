@@ -2,7 +2,7 @@
 
 #include "./sys/io/io.h"
 #include "./sys/memory/memory.h"
-#include "./sys/interruption.c"
+#include "./sys/interruption.hpp"
 
 // compare [first, first_end) and second (until '\0')
 
