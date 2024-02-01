@@ -24,6 +24,7 @@ void* kernel_realloc(void* old_addr, unsigned int new_size) {
     if (new_size + top > MEMORY_MAX)
         return 0;
     void* new_addr = kernel_malloc(new_size);
+    if (new_addr == (void*) 0) return 0;
     memcpy(new_addr, old_addr, new_size);
     return new_addr;
 }

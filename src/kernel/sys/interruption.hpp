@@ -321,6 +321,10 @@ typedef struct {
 void register_handlers()
 {
 	InterruptDescriptor32* idt = kernel_calloc(sizeof(InterruptDescriptor32), 256);
+	if (idt == (InterruptDescriptor32*)0)
+	{
+		printf("[EXC] register_handlers(): not enough memory!");
+	}
 
     for (int i = 0; i < 256; ++i)
     {
