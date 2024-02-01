@@ -9,5 +9,5 @@ typedef struct {
    uint8_t  zero;            // unused, set to 0
    uint8_t  type_attributes; // gate type, dpl, and p fields
    uint16_t offset_2;        // offset bits 16..31
-} InterruptDescriptor32; 
+} InterruptDescriptor32;
 #pragma pack(pop)
