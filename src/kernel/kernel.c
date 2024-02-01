@@ -16,7 +16,6 @@ void str_reverse(char* str_start, char* str_end) {
     }
 }
 
-
 void entry_point() {
     init_printer();
     printf(         "              %b %d_RED!hello world!", 20, 0x80000000);
