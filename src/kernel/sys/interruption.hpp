@@ -2,9 +2,16 @@
 
 #include "./idt.h"
 #include "./memory/memory.h"
+#include "./io/io.h"
 
 #define __gen_tramplin(x) static void tramplin_##x() { panic_handler(0x##x); }
 #define __gen_tramplins(...) static void (*tramplins[])(void) = {__VA_ARGS__};
+
+static void kernel_panic(char* str, int num)
+{
+	init_printer();
+	printf(str, num);
+}
 
 static void panic_handler(int vector)
 {
