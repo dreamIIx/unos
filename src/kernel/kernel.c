@@ -3,6 +3,7 @@
 #include "./sys/io/io.h"
 #include "./sys/memory/memory.h"
 #include "./sys/interruption.hpp"
+#include "./sys/pic/pic.h"
 
 // compare [first, first_end) and second (until '\0')
 
@@ -22,12 +23,14 @@ void entry_point() {
  //                  ||||||||||||||
  //   asm_print_d2vm( "Hello from C!");
     register_handlers();
+    setup_pic();
     init_printer();
-    //char* str = "unhandled interrupt %x";
-    //int num = 0x1e;
+
     //asm("xchgw %bx, %bx");
 
     //printf(str, num);
-    printf("%d", 1/0);
+    //printf("%d", 1/0);  // 0x0
+
+    asm("sti");
     while (1) {}
 }
