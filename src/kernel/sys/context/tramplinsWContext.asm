@@ -1,21 +1,21 @@
 [BITS 32]
 
-[GLOBAL _tramplin_00]
-[GLOBAL _tramplin_01]
-[GLOBAL _tramplin_02]
-[GLOBAL _tramplin_03]
-[GLOBAL _tramplin_04]
-[GLOBAL _tramplin_05]
-[GLOBAL _tramplin_06]
-[GLOBAL _tramplin_07]
-[GLOBAL _tramplin_08]
-[GLOBAL _tramplin_09]
-[GLOBAL _tramplin_0a]
-[GLOBAL _tramplin_0b]
-[GLOBAL _tramplin_0c]
-[GLOBAL _tramplin_0d]
-[GLOBAL _tramplin_0e]
-[GLOBAL _tramplin_0f]
+[GLOBAL _tramplin_0]
+[GLOBAL _tramplin_1]
+[GLOBAL _tramplin_2]
+[GLOBAL _tramplin_3]
+[GLOBAL _tramplin_4]
+[GLOBAL _tramplin_5]
+[GLOBAL _tramplin_6]
+[GLOBAL _tramplin_7]
+[GLOBAL _tramplin_8]
+[GLOBAL _tramplin_9]
+[GLOBAL _tramplin_a]
+[GLOBAL _tramplin_b]
+[GLOBAL _tramplin_c]
+[GLOBAL _tramplin_d]
+[GLOBAL _tramplin_e]
+[GLOBAL _tramplin_f]
 [GLOBAL _tramplin_10]
 [GLOBAL _tramplin_11]
 [GLOBAL _tramplin_12]
@@ -265,78 +265,78 @@ collect_context:
     pusha
 
 
-tramplin_00:
+tramplin_0:
 	push 0x0
-	push 0x00
-	jmp collect_context
-
-tramplin_01:
 	push 0x0
-	push 0x01
 	jmp collect_context
 
-tramplin_02:
+tramplin_1:
 	push 0x0
-	push 0x02
+	push 0x1
 	jmp collect_context
 
-tramplin_03:
+tramplin_2:
 	push 0x0
-	push 0x03
+	push 0x2
 	jmp collect_context
 
-tramplin_04:
+tramplin_3:
 	push 0x0
-	push 0x04
+	push 0x3
 	jmp collect_context
 
-tramplin_05:
+tramplin_4:
 	push 0x0
-	push 0x05
+	push 0x4
 	jmp collect_context
 
-tramplin_06:
+tramplin_5:
 	push 0x0
-	push 0x06
+	push 0x5
 	jmp collect_context
 
-tramplin_07:
+tramplin_6:
 	push 0x0
-	push 0x07
+	push 0x6
 	jmp collect_context
 
-tramplin_08:
-	push 0x08
-	jmp collect_context
-
-tramplin_09:
+tramplin_7:
 	push 0x0
-	push 0x09
+	push 0x7
 	jmp collect_context
 
-tramplin_0a:
-	push 0x0a
+tramplin_8:
+	push 0x8
 	jmp collect_context
 
-tramplin_0b:
-	push 0x0b
-	jmp collect_context
-
-tramplin_0c:
-	push 0x0c
-	jmp collect_context
-
-tramplin_0d:
-	push 0x0d
-	jmp collect_context
-
-tramplin_0e:
-	push 0x0e
-	jmp collect_context
-
-tramplin_0f:
+tramplin_9:
 	push 0x0
-	push 0x0f
+	push 0x9
+	jmp collect_context
+
+tramplin_a:
+	push 0xa
+	jmp collect_context
+
+tramplin_b:
+	push 0xb
+	jmp collect_context
+
+tramplin_c:
+	push 0xc
+	jmp collect_context
+
+tramplin_d:
+	push 0xd
+	jmp collect_context
+
+tramplin_e:
+	push 0xe
+	jmp collect_context
+
+tramplin_f:
+	push 0x0
+	push 0xf
 	jmp collect_context
 
 tramplin_10:

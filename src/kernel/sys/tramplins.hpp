@@ -1,24 +1,7 @@
 #pragma once
 
-#include "./idt.h"
-#include "./memory/memory.h"
-#include "./io/io.h"
-
 #define __gen_tramplin(x) static void tramplin_##x() { panic_handler(0x##x); }
 #define __gen_tramplins(...) static void (*tramplins[])(void) = {__VA_ARGS__};
-
-static void kernel_panic(char* str, int num)
-{
-	init_printer();
-	printf(str, num);
-	while (1);
-}
-
-static void panic_handler(int vector)
-{    
-	kernel_panic("unhandled interrupt %x", vector);
-}
-
 
 // AUTO-GENERATED CODE IS BELOW
 
@@ -310,33 +293,3 @@ __gen_tramplins(tramplin_0, tramplin_1, tramplin_2, tramplin_3, tramplin_4, tram
 					tramplin_e8, tramplin_e9, tramplin_ea, tramplin_eb, tramplin_ec, tramplin_ed, tramplin_ee, tramplin_ef,
 					tramplin_f0, tramplin_f1, tramplin_f2, tramplin_f3, tramplin_f4, tramplin_f5, tramplin_f6, tramplin_f7,
 					tramplin_f8, tramplin_f9, tramplin_fa, tramplin_fb, tramplin_fc, tramplin_fd, tramplin_fe, tramplin_ff)
-
-#pragma pack(push, 1)
-typedef struct {
-	uint16_t IDT_size;
-	uint32_t linear_addr_IDT;
-} IDTD;
-#pragma pack(pop)
-
-void register_handlers()
-{
-	InterruptDescriptor32* idt = kernel_calloc(sizeof(InterruptDescriptor32), 256);
-	if (idt == (InterruptDescriptor32*)0)
-	{
-		printf("[EXC] register_handlers(): not enough memory!");
-	}
-
-    for (int i = 0; i < 256; ++i)
-    {
-		idt[i].offset_1 = (uint16_t) tramplins[i];  // lower bits
-		idt[i].offset_2 = (uint16_t) (((uint32_t) tramplins[i]) >> 16);  // upper bits
-		idt[i].type_attributes = 0b10001110;
-		idt[i].selector = 0b1000;
-    }
-
-	IDTD idtd;
-	idtd.IDT_size = sizeof(InterruptDescriptor32) * 256 - 1;
-	idtd.linear_addr_IDT = idt;
-
-	asm("lidt %0" :: "m"(idtd));
-}

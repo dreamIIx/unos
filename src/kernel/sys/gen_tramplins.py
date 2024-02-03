@@ -2,7 +2,7 @@ import os
 
 root = os.getcwd() + '/src/kernel/sys'
 
-with open(root + '/interruption.template','r') as ff, open(root + '/interruption.hpp','w') as sf:
+with open(root + '/tramplins.hpp.template','r') as ff, open(root + '/tramplins.hpp','w') as sf:
     for line in ff:
         sf.write(line)
     all_tramplins = ''
