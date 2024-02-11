@@ -12,12 +12,11 @@ void panic_handler(int vector)
 	kernel_panic("unhandled interrupt %x", vector);
 }
 
-void interrupt_handler(context* ctx)
-{
-	switch(ctx->vector)
-	{
-		
-	}
+void interrupt_handler(context* ctx) {
+    switch (ctx->vector) {
+        //case 0x20: timer_interrupt(ctx); break;
+        default: default_panic_handler(ctx); break;
+    }
 }
 
 void register_handlers()
@@ -32,11 +31,11 @@ void register_handlers()
     {
 		if (i < 32)
 		{
-			idt[i].gate_type = 0xF;
+			idt[i].gate_type = 0x8F;
 		}
 		else
 		{
-			idt[i].gate_type = 0xE;
+			idt[i].gate_type = 0x8E;
 		}
 		idt[i].offset_1 = (uint16_t) tramplins[i];  // lower bits
 		idt[i].offset_2 = (uint16_t) (((uint32_t) tramplins[i]) >> 16);  // upper bits
