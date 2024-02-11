@@ -33,3 +33,7 @@ typedef struct
     
 } context;
 #pragma pack(pop)
+
+void interrupt_handler(context* ctx);
+
+void default_panic_handler(context* ctx);

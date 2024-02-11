@@ -7,7 +7,7 @@ with open("./src/kernel/sys/context/tramplinsWContext.asm", "w") as f:
     wr("[BITS 32]\n\n")
     
     for i in range(0, 256):
-        wr(f"[GLOBAL _tramplin_{str(hex(i))[2:]}]\n")
+        wr(f"[GLOBAL tramplin_{str(hex(i))[2:]}]\n")
 
     wr('''
 collect_context:

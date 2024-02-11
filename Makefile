@@ -24,7 +24,7 @@ KERNEL_ENTRY_ADDRESS = 0x20200
 ifeq ($(OS), Windows_NT)
 	ASM = ${NASM_PATH}\nasm
 	DD = ${CYGWIN_PATH}\bin\dd
-	GCC = gcc
+	GCC = gcc -fno-leading-underscore
 	MCOPY = 
 	MKFS = 
 	LD = ld
